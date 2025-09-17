@@ -1,0 +1,38 @@
+server:
+  port: 8080
+  tomcat:
+    threads:
+      max: 2000
+      min-spare: 200
+    max-connections: 20000
+    accept-count: 2000
+    connection-timeout: 5000
+    max-http-form-post-size: 2MB
+    max-swallow-size: 2MB
+  netty:
+    connection-timeout: 5s
+
+spring:
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+logging:
+  level:
+    root: INFO
+    com.example.onemrc: INFO
+    org.springframework: INFO
+    org.springframework.web: INFO
+    org.apache.tomcat: INFO
+    org.hibernate: WARN
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
