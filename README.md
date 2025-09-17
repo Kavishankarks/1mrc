@@ -14,7 +14,7 @@ The 1MRC tests your ability to build high-performance, thread-safe web services 
 ```json
 {
   "userId": "string", 
-  "value": number
+  "value": "number"
 }
 ```
 
