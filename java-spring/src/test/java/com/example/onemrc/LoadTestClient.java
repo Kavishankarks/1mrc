@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class LoadTestClient {
     
     private static final int TOTAL_REQUESTS = 1_000_000;
-    private static final int CONCURRENCY = 500; // Reduced to avoid thread limits
+    private static final int CONCURRENCY = 200; // Reduced to avoid file descriptor limits
     private static final String SERVER_URL = "http://localhost:8080";
     
     private final HttpClient httpClient;
@@ -80,7 +80,20 @@ public class LoadTestClient {
     public void runTest() {
         long startTime = System.currentTimeMillis();
         
-        ExecutorService executor = Executors.newFixedThreadPool(CONCURRENCY);
+        // Use virtual threads for massive concurrency (Java 21+)
+        ExecutorService executor;
+        try {
+            // Try virtual threads first (Java 21+)
+            executor = Executors.newVirtualThreadPerTaskExecutor();
+            System.out.println("Using Virtual Threads for maximum concurrency");
+            log("Using Virtual Threads for maximum concurrency");
+        } catch (Exception e) {
+            // Fallback to platform threads
+            executor = Executors.newFixedThreadPool(CONCURRENCY);
+            System.out.println("Using Platform Threads (Virtual Threads not available)");
+            log("Using Platform Threads (Virtual Threads not available)");
+        }
+        
         CountDownLatch latch = new CountDownLatch(TOTAL_REQUESTS);
         
         log("Starting load test execution");
