@@ -11,10 +11,10 @@ The 1MRC tests your ability to build high-performance, thread-safe web services 
 **Implement an HTTP server with the following endpoints:**
 
 1. **POST /event** - Accept event data
-   ```json
+```json
 {
   "userId": "string", 
-  "value": "number"
+  "value": number
 }
 ```
 
