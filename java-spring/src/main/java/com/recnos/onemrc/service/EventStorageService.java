@@ -1,7 +1,7 @@
-package com.example.onemrc.service;
+package com.recnos.onemrc.service;
 
-import com.example.onemrc.dto.EventDto;
-import com.example.onemrc.dto.StatsDto;
+import com.recnos.onemrc.dto.EventDto;
+import com.recnos.onemrc.dto.StatsDto;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ConcurrentHashMap;

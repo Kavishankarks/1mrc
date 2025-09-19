@@ -3,3 +3,4 @@
 /java-spring/logs
 /java-spring/target
 /logs
+*.log

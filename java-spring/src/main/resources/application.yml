@@ -20,7 +20,7 @@ spring:
 logging:
   level:
     root: INFO
-    com.example.onemrc: INFO
+    com.recnos.onemrc: INFO
     org.springframework: INFO
     org.springframework.web: INFO
     org.apache.tomcat: INFO

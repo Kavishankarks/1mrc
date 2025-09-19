@@ -1,9 +1,8 @@
-package com.example.onemrc.controller;
+package com.recnos.onemrc.controller;
 
-import com.example.onemrc.dto.EventDto;
-import com.example.onemrc.dto.StatsDto;
-import com.example.onemrc.service.EventStorageService;
-import jakarta.validation.Valid;
+import com.recnos.onemrc.dto.EventDto;
+import com.recnos.onemrc.dto.StatsDto;
+import com.recnos.onemrc.service.EventStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +16,11 @@ public class EventController {
     public EventController(EventStorageService eventStorageService) {
         this.eventStorageService = eventStorageService;
     }
-    
+
     @PostMapping("/event")
     public ResponseEntity<Void> addEvent(@RequestBody EventDto event) {
         // Quick null check instead of full validation for performance
-        if (event.getUserId() == null || event.getValue() == null) {
+        if (event == null || event.getValue() == null) {
             return ResponseEntity.badRequest().build();
         }
         eventStorageService.addEvent(event);

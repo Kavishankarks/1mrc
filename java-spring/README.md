@@ -23,7 +23,7 @@ Enterprise-grade Spring Boot implementation for handling 1 million concurrent re
 mvn spring-boot:run
 
 # In another terminal, run the load test
-mvn exec:java -Dexec.mainClass="com.example.onemrc.LoadTestClient"
+mvn exec:java -Dexec.mainClass="com.recnos.onemrc.LoadTestClient"
 ```
 
 ## API Endpoints
@@ -118,7 +118,7 @@ The included `LoadTestClient` provides comprehensive performance testing:
 
 ### Test Execution
 ```bash
-mvn exec:java -Dexec.mainClass="com.example.onemrc.LoadTestClient"
+mvn exec:java -Dexec.mainClass="com.recnos.onemrc.LoadTestClient"
 ```
 
 ### Expected Performance

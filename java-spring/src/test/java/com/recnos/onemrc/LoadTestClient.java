@@ -1,7 +1,8 @@
-package com.example.onemrc;
+package com.recnos.onemrc;
 
+import com.recnos.onemrc.dto.EventDto;
+import com.recnos.onemrc.dto.StatsDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,7 +16,6 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class LoadTestClient {
     
     private static final int TOTAL_REQUESTS = 1_000_000;
-    private static final int CONCURRENCY = 200; // Reduced to avoid file descriptor limits
+    private static final int CONCURRENCY = 100; // Optimized with connection reuse
     private static final String SERVER_URL = "http://localhost:8080";
     
     private final HttpClient httpClient;
@@ -36,7 +36,8 @@ public class LoadTestClient {
     public LoadTestClient() {
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
-                .executor(Executors.newFixedThreadPool(100)) // Limit HTTP client threads
+                .executor(Executors.newVirtualThreadPerTaskExecutor()) // Use virtual threads for HTTP I/O
+                .version(HttpClient.Version.HTTP_1_1) // Better connection reuse than HTTP/2 for this use case
                 .build();
         
         this.objectMapper = new ObjectMapper();
@@ -156,20 +157,20 @@ public class LoadTestClient {
             StatsDto stats = getStats();
             if (stats != null) {
                 System.out.printf("%n=== Server Stats ===%n");
-                System.out.printf("Total Requests: %d%n", stats.totalRequests);
-                System.out.printf("Unique Users: %d%n", stats.uniqueUsers);
-                System.out.printf("Sum: %.2f%n", stats.sum);
-                System.out.printf("Average: %.2f%n", stats.avg);
+                System.out.printf("Total Requests: %d%n", stats.getTotalRequests());
+                System.out.printf("Unique Users: %d%n", stats.getUniqueUsers());
+                System.out.printf("Sum: %.2f%n", stats.getSum());
+                System.out.printf("Average: %.2f%n", stats.getAvg());
                 
                 log(String.format("Server stats - Total: %d, Users: %d, Sum: %.2f, Avg: %.2f",
-                    stats.totalRequests, stats.uniqueUsers, stats.sum, stats.avg));
+                    stats.getTotalRequests(), stats.getUniqueUsers(), stats.getSum(), stats.getAvg()));
                 
-                if (stats.totalRequests == TOTAL_REQUESTS) {
+                if (stats.getTotalRequests() == TOTAL_REQUESTS) {
                     System.out.println("\n✅ SUCCESS: All requests processed correctly!");
                     log("SUCCESS: All " + TOTAL_REQUESTS + " requests processed correctly!");
                 } else {
-                    System.out.printf("\n❌ FAILED: Expected %d requests, got %d%n", TOTAL_REQUESTS, stats.totalRequests);
-                    log(String.format("FAILED: Expected %d requests, got %d", TOTAL_REQUESTS, stats.totalRequests));
+                    System.out.printf("\n❌ FAILED: Expected %d requests, got %d%n", TOTAL_REQUESTS, stats.getTotalRequests());
+                    log(String.format("FAILED: Expected %d requests, got %d", TOTAL_REQUESTS, stats.getTotalRequests()));
                 }
             }
             
@@ -195,6 +196,7 @@ public class LoadTestClient {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(SERVER_URL + "/event"))
                 .header("Content-Type", "application/json")
+                // HttpClient automatically manages connection reuse with HTTP/1.1
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .timeout(Duration.ofSeconds(10))
                 .build();
@@ -239,28 +241,5 @@ public class LoadTestClient {
     
     public static void main(String[] args) {
         new LoadTestClient().runTest();
-    }
-    
-    // DTOs for test client
-    static class EventDto {
-        @com.fasterxml.jackson.annotation.JsonProperty("userId")
-        public String userId;
-        
-        @com.fasterxml.jackson.annotation.JsonProperty("value")
-        public Double value;
-        
-        public EventDto() {}
-        
-        public EventDto(String userId, Double value) {
-            this.userId = userId;
-            this.value = value;
-        }
-    }
-    
-    static class StatsDto {
-        public long totalRequests;
-        public long uniqueUsers;
-        public double sum;
-        public double avg;
     }
 }
