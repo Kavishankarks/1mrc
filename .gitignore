@@ -4,3 +4,4 @@
 /java-spring/target
 /logs
 *.log
+/rust-service/target
