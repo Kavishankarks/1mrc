@@ -1,6 +1,6 @@
 # Python HTTP Server for 1MRC
 
-This is a Python implementation of the 1MRC service, added as a separate spin to the original 1MRC project￼.
+This is a Python implementation of the 1MRC service, added as a separate spin to the original [1MRC project](https://github.com/Kavishankarks/1mrc).
 
 It exposes a simple TCP/HTTP server that:
 - Handles POST /event requests with JSON bodies containing userId and value.
