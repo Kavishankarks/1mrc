@@ -210,7 +210,7 @@ async fn main() {
     let client = LoadTestClient::new(&base_url);
     
     // Warm-up test with more conservative settings
-    println!("🔥 Running warm-up test (1,000 requests)...");
+    println!("Running warm-up test (1,000 requests)...");
     client.run_load_test(1_000, 50, 10).await;
     
     // Reset counters
