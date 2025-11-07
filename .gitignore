@@ -1,8 +1,8 @@
 *.iml
-*.xml
-/java-spring/logs
+    /java-spring/logs
 /java-spring/target
 /logs
 *.log
 /rust-service/target
 /java-activej/target
+/.idea
