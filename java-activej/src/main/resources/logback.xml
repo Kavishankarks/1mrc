@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Set default log level -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+    <!-- ActiveJ specific loggers -->
+    <logger name="io.activej" level="INFO"/>
+    <logger name="io.activej.http" level="INFO"/>
+    <logger name="io.activej.eventloop" level="WARN"/>
+
+    <!-- Application loggers -->
+    <logger name="com.recnos.onemrc" level="INFO"/>
+</configuration>

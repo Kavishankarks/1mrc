@@ -1,0 +1,9 @@
+# K6 results
+loadtest-results.json
+*.json
+
+# Logs
+*.log
+
+# OS
+.DS_Store

@@ -38,7 +38,7 @@ func NewEventStore() *EventStore {
 
 func (es *EventStore) AddEvent(event Event) {
 	atomic.AddInt64(&es.totalRequests, 1)
-	
+
 	sumBits := atomic.LoadUint64(&es.sum)
 	for {
 		newSum := float64FromBits(sumBits) + event.Value
@@ -48,7 +48,7 @@ func (es *EventStore) AddEvent(event Event) {
 		}
 		sumBits = atomic.LoadUint64(&es.sum)
 	}
-	
+
 	if _, exists := es.users.LoadOrStore(event.UserID, struct{}{}); !exists {
 		atomic.AddInt64(&es.userCount, 1)
 	}
@@ -58,12 +58,12 @@ func (es *EventStore) GetStats() Stats {
 	totalReqs := atomic.LoadInt64(&es.totalRequests)
 	sumValue := float64FromBits(atomic.LoadUint64(&es.sum))
 	uniqueUsers := atomic.LoadInt64(&es.userCount)
-	
+
 	var avg float64
 	if totalReqs > 0 {
 		avg = sumValue / float64(totalReqs)
 	}
-	
+
 	return Stats{
 		TotalRequests: totalReqs,
 		UniqueUsers:   uniqueUsers,
@@ -84,17 +84,18 @@ var store *EventStore
 
 func main() {
 	store = NewEventStore()
-	
+
 	http.HandleFunc("/event", handleEvent)
 	http.HandleFunc("/stats", handleStats)
-	
+	http.HandleFunc("/health", handleHealth)
+
 	server := &http.Server{
 		Addr:           ":8080",
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
-	
+
 	fmt.Println("Server starting on :8080")
 	log.Fatal(server.ListenAndServe())
 }
@@ -104,31 +105,38 @@ func handleEvent(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	
+
 	var event Event
 	if err := json.NewDecoder(r.Body).Decode(&event); err != nil {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 		return
 	}
-	
+
 	if event.UserID == "" {
 		http.Error(w, "userId is required", http.StatusBadRequest)
 		return
 	}
-	
+
 	store.AddEvent(event)
-	
+
 	w.WriteHeader(http.StatusOK)
 }
+
 
 func handleStats(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	
+
 	stats := store.GetStats()
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(stats)
+}
+
+func handleHealth(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"status": "healthy"})
 }

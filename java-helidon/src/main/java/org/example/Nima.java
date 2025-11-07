@@ -17,9 +17,18 @@ public final class Nima {
                 .port(8080)
                 .routing(r -> r
                         .post("/event", (req, res) -> handleEvent(req, res, jsonMapper, statsService))
-                        .get("/stats", (req, res) -> handleStats(res, jsonMapper, statsService)))
+                        .get("/stats", (req, res) -> handleStats(res, jsonMapper, statsService))
+                        .get("/health",(req, res) -> health(res)))
                 .build()
                 .start();
+    }
+
+    private static void health(ServerResponse res) {
+        try {
+            res.status(Status.OK_200).send();
+        } catch (Exception e) {
+            res.status(Status.SERVICE_UNAVAILABLE_503).send("Server unavailable");
+        }
     }
 
     private static void handleEvent(ServerRequest req, ServerResponse res, JsonMapper jsonMapper, StatsService statsService) {
@@ -28,7 +37,7 @@ public final class Nima {
             String userId = request.userId();
             Integer value = request.value();
             statsService.recordEvent(userId, value);
-            res.status(Status.NO_CONTENT_204).send();
+            res.status(Status.OK_200_CODE).send();
         } catch (Exception e) {
             res.status(Status.BAD_REQUEST_400).send("Invalid JSON payload");
         }

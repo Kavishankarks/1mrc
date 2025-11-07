@@ -1,0 +1,77 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: '1mrc-monitor'
+
+scrape_configs:
+  # ActiveJ Service
+  - job_name: 'java-activej'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:8080']
+        labels:
+          service: 'activej'
+          implementation: 'ActiveJ'
+          language: 'java'
+          challenge: '1mrc'
+
+  # Helidon Service
+  - job_name: 'java-helidon'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:8081']
+        labels:
+          service: 'helidon'
+          implementation: 'Helidon'
+          language: 'java'
+          challenge: '1mrc'
+
+  # Netty Service
+  - job_name: 'java-netty'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:8082']
+        labels:
+          service: 'netty'
+          implementation: 'Netty'
+          language: 'java'
+          challenge: '1mrc'
+
+  # Vert.x Service
+  - job_name: 'java-vertx'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:8083']
+        labels:
+          service: 'vertx'
+          implementation: 'Vert.x'
+          language: 'java'
+          challenge: '1mrc'
+
+  # Go Service (if metrics added)
+  - job_name: 'go-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:8084']
+        labels:
+          service: 'go'
+          implementation: 'Go'
+          language: 'go'
+          challenge: '1mrc'
+
+  # Rust Service (if metrics added)
+  - job_name: 'rust-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:8085']
+        labels:
+          service: 'rust'
+          implementation: 'Rust'
+          language: 'rust'
+          challenge: '1mrc'
+
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
