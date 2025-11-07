@@ -4,5 +4,6 @@
 /logs
 *.log
 /rust-service/target
+.venv
 /java-activej/target
 /.idea
