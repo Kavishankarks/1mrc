@@ -73,6 +73,53 @@ mvn spring-boot:run     # Start server
 mvn exec:java           # Run 1M request test
 ```
 
+### Rust Actix web implementation (`rust-actix/`)
+
+**Features:**
+- Single threaded aggregation using mpsc channel
+- no locking required.
+
+╔═══════════════════════════════════════════════════════════════╗
+║                    Load Test Results                          ║
+╠═══════════════════════════════════════════════════════════════╣
+║  Duration:            9.477s                                  ║
+║  Total Requests:      1,000,000                               ║
+║  Successful:          1,000,000                               ║
+║  Failed:              0                                       ║
+║  Success Rate:        100.00                                % ║
+║  Error Rate:          0.00                                  % ║
+╠═══════════════════════════════════════════════════════════════╣
+║  Throughput Statistics:                                       ║
+║    Average RPS:     105,518                                 ║
+║    Peak RPS:        108,681                                 ║
+║    Min RPS:         103,294                                 ║
+╠═══════════════════════════════════════════════════════════════╣
+║  Latency Statistics (sampled):                                ║
+║    Min:             69µs                                    ║
+║    Avg:             4.724ms                                 ║
+║    P50:             1.298ms                                 ║
+║    P90:             13.728ms                                ║
+║    P95:             18.461ms                                ║
+║    P99:             30.104ms                                ║
+║    Max:             61.751ms                                ║
+╚═══════════════════════════════════════════════════════════════╝
+
+Fetching server statistics...
+
+╔═══════════════════════════════════════════════════════════════╗
+║                    Server Statistics                          ║
+╠═══════════════════════════════════════════════════════════════╣
+║  Total Requests:      1,000,000                               ║
+║  Unique Users:        75,000                                  ║
+║  Sum:                 500000000.00                            ║
+║  Average:             500.0000                                ║
+╚═══════════════════════════════════════════════════════════════╝
+
+✅ SUCCESS: Server processed 1,000,000 requests (expected 1,000,000)
+✅ Aggregation is correct (avg: 500.0000)
+✅ Unique users count is correct (75,000 users)
+
+
 ## 📊 Performance Comparison
 
 | Metric | Go | Java Spring Boot |
